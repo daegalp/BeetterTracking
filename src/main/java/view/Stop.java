@@ -1,11 +1,25 @@
 package view;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-
+import org.jutils.jprocesses.JProcesses;
+import org.jutils.jprocesses.model.ProcessInfo;
+import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.simple.JSONObject;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -17,8 +31,13 @@ import javax.swing.ImageIcon;
  * @author Astin
  */
 public class Stop extends javax.swing.JFrame {
+    private final OkHttpClient httpClient = new OkHttpClient();
+    private String token = "";
     int hour, minute, second, ampm;
     int xx,yy;
+
+    int i=0;
+    boolean status = false;
     
     Calendar cal = Calendar.getInstance();
     
@@ -33,6 +52,17 @@ public class Stop extends javax.swing.JFrame {
         if(ampm == 1 ){
             hour += 12;
         }
+        
+    }
+    
+    public void checkToken(){
+        if(status == false){
+           getProcess();
+        }
+    }
+    public void setToken(String token){
+        this.token = token;
+        checkToken();
     }
     
     public void showTime(){
@@ -69,6 +99,106 @@ public class Stop extends javax.swing.JFrame {
        t.start();
     }
     
+    public void getProcess(){
+        Thread t = new Thread(){
+            public void run(){
+                    List<ProcessInfo> processesList = JProcesses.getProcessList();
+                    int length = processesList.size();
+                    List<String> app = new ArrayList<String>();
+                    String[] name = new String[length];
+//String name = "{";
+//                if(status == false){
+                
+                      for(i=0;i<processesList.size();i++){
+                          name[i]= processesList.get(i).getName();
+                          //System.out.println(i+" " +name[i]);
+                      }
+                      
+                      //name += "}";
+                        sendData(name,length);
+//                        System.out.println("\n");
+//                        Gson gson = new GsonBuilder().create();
+//                        String jsonArray=gson.toJson(name);
+//                        System.out.println(" ---- >" + name);
+//                        sendData(jsonArray);
+//                        for (final ProcessInfo processInfo : processesList) {
+//                            app.add(processInfo.getName());
+//                            //System.out.println("Process Name: " + processInfo.getName());
+//                        }
+//                        System.out.println(app);
+//                        System.out.println("----------------json----------");
+//                        //String json = new Gson().toJson(app);
+//                        sendData(app);
+                        //System.out.println(json);
+                        try{
+                            Thread.sleep(120000);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Stop.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                
+                
+            }
+        };
+        t.start();
+        
+    }
+    
+    public void sendData(String[] nama,int length){
+        System.out.println(token);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            //default timeout for not annotated requests
+            .readTimeout(300000, TimeUnit.MILLISECONDS)
+            .connectTimeout(300000, TimeUnit.MILLISECONDS)
+            .writeTimeout(300000, TimeUnit.MILLISECONDS)
+            .build();
+        
+//        RequestBody formBody = new FormBody.Builder()
+//                .add("data[0]", "atom")
+//                .add("data[1]", "firefox")
+//                .add("data[1]", "steam")
+//                .build();
+
+        for (int j = 0; j < nama.length; j++) {
+            System.out.println(nama[j]);
+        }
+        
+        FormBody.Builder formBuilder = new FormBody.Builder();
+        
+        for(int i=0; i< length;i++){
+            formBuilder.add("data[" + i + "]" , nama[i]);
+        
+        }
+        RequestBody formBody = formBuilder.build();
+        
+        //System.out.println(nama);
+        Request request = new Request.Builder()
+//                           .url("http://10.252.129.94:8000/api/application-tracking-history/send")
+.url("https://better123.herokuapp.com/api/application-tracking-history/data")
+//                .url("https://better123.herokuapp.com/api/insert")
+                .addHeader("Content-Type","application/x-www-form-urlencoded")
+                .addHeader("Accept","application/json")
+                .addHeader("Authorization", token)
+                .post(formBody)
+                .build();
+        
+        
+        
+        try (Response response = okHttpClient.newCall(request).execute()) {
+               String t = response.body().string();
+               System.out.println(t);
+            if(response.message().equalsIgnoreCase("OK")){
+                System.out.println("200");
+            }
+            else if(response.message().equalsIgnoreCase("Unauthorized")){
+                System.out.println("401");
+            }
+            
+            System.out.println(response.message());
+            
+        } catch (IOException ex) {
+            Logger.getLogger(SignIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -78,7 +208,6 @@ public class Stop extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         timeLabel = new javax.swing.JLabel();
         stopLabel = new javax.swing.JLabel();
@@ -89,9 +218,6 @@ public class Stop extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setPreferredSize(new java.awt.Dimension(1109, 590));
@@ -172,17 +298,12 @@ public class Stop extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1030, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1030, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
         );
 
@@ -190,6 +311,7 @@ public class Stop extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void stopLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopLabelMouseClicked
+        status = true;
         new Start().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_stopLabelMouseClicked
@@ -279,7 +401,6 @@ public class Stop extends javax.swing.JFrame {
     private javax.swing.JLabel closeLabel;
     private javax.swing.JLabel exitLabel;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel minimizeLabel;
     private javax.swing.JLabel stopLabel;

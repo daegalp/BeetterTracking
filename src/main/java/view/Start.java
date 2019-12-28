@@ -19,6 +19,7 @@ import javax.swing.ImageIcon;
 public class Start extends javax.swing.JFrame {
     int hour, minute, second, ampm;
     int xx,yy;
+    String token="";
     
     Calendar cal = Calendar.getInstance();
     public Start() {
@@ -32,6 +33,13 @@ public class Start extends javax.swing.JFrame {
         if(ampm == 1 ){
             hour += 12;
         }
+    }
+    
+    public void setToken(String token){
+        this.token = token;
+        System.out.println("--------START---------");
+        System.out.println(token);
+        System.out.println("-------START----------");
     }
     
     public void showTime(){
@@ -182,7 +190,9 @@ public class Start extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void startLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startLabelMouseClicked
-        new Stop().setVisible(true);
+        Stop stop = new Stop();
+        stop.setVisible(true);
+        stop.setToken(token);
         this.dispose();
     }//GEN-LAST:event_startLabelMouseClicked
 

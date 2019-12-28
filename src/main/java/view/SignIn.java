@@ -198,10 +198,27 @@ public class SignIn extends javax.swing.JFrame {
                 .build();
         
         try (Response response = httpClient.newCall(request).execute()) {
-
+            
             if(response.message().equalsIgnoreCase("OK")){
+                System.out.println(response.message());
+            
+            String t = response.body().string();
+            StringTokenizer st = new StringTokenizer(t, "\"");
+            int i=0;
+            while(st.hasMoreTokens()){
+                if(i==3){
+                    token="Bearer " + st.nextToken();
+                    break;
+                }
+                st.nextToken();
+                i++; 
+            }
+            System.out.println(token);
+            
                 System.out.println("200");
-                new Start().setVisible(true);
+                Start start = new Start();
+                start.setToken(token);
+                start.setVisible(true);
                 this.dispose();
             }
             else if(response.message().equalsIgnoreCase("Unauthorized")){
@@ -209,20 +226,6 @@ public class SignIn extends javax.swing.JFrame {
                 System.out.println("401");
             }
             
-            System.out.println(response.message());
-            
-            String t = response.body().string();
-            StringTokenizer st = new StringTokenizer(t, "\"");
-            int i=0;
-            while(st.hasMoreTokens()){
-                if(i==3){
-                    token=st.nextToken();
-                    break;
-                }
-                st.nextToken();
-                i++; 
-            }
-            System.out.println(token);
         } catch (IOException ex) {
             Logger.getLogger(SignIn.class.getName()).log(Level.SEVERE, null, ex);
         }
