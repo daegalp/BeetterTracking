@@ -6,7 +6,9 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -105,17 +107,37 @@ public class Stop extends javax.swing.JFrame {
                     List<ProcessInfo> processesList = JProcesses.getProcessList();
                     int length = processesList.size();
                     List<String> app = new ArrayList<String>();
-                    String[] name = new String[length];
+                 
+                    
+//                    Set<ProcessInfo> setProcess = new HashSet<>(processesList); 
+//                    List<ProcessInfo> processListNoDuplicate  = new ArrayList<>(setProcess);
 //String name = "{";
 //                if(status == false){
-                
-                      for(i=0;i<processesList.size();i++){
-                          name[i]= processesList.get(i).getName();
+                    for(i=0;i<processesList.size();i++){
+                        app.add(processesList.get(i).getName());
+                          //name[i]= processListNoDuplicate.get(i).getName();
+                          //System.out.println(i+" " +name[i]);
+                    }
+                    System.out.println("--->" + processesList.size());
+                    Set<String> setProcess = new HashSet<>(app); 
+                    List<String> processListNoDuplicate  = new ArrayList<>(setProcess);
+                    
+                    System.out.println("--->" + processListNoDuplicate.size());
+                    
+                    String[] name = new String[processListNoDuplicate.size()];
+                    
+                    for(i=0;i<processListNoDuplicate.size();i++){
+                          name[i]= processListNoDuplicate.get(i);
                           //System.out.println(i+" " +name[i]);
                       }
+                    
+//                      for(i=0;i<processesList.size();i++){
+//                          name[i]= processesList.get(i).getName();
+//                          //System.out.println(i+" " +name[i]);
+//                      }
                       
                       //name += "}";
-                        sendData(name,length);
+                        sendData(name,name.length);
 //                        System.out.println("\n");
 //                        Gson gson = new GsonBuilder().create();
 //                        String jsonArray=gson.toJson(name);
@@ -159,7 +181,7 @@ public class Stop extends javax.swing.JFrame {
 //                .build();
 
         for (int j = 0; j < nama.length; j++) {
-            System.out.println(nama[j]);
+            System.out.println(j + " " + nama[j]);
         }
         
         FormBody.Builder formBuilder = new FormBody.Builder();
