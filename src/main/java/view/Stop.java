@@ -33,10 +33,12 @@ import org.json.simple.JSONObject;
  * @author Astin
  */
 public class Stop extends javax.swing.JFrame {
-    private final OkHttpClient httpClient = new OkHttpClient();
     private String token = "";
     int hour, minute, second, ampm;
-    int xx,yy;
+    int jam,menit,detik;
+    int waktu;
+    int xx,yy,x,y;
+    boolean exit = false;
 
     int i=0;
     boolean status = false;
@@ -46,6 +48,7 @@ public class Stop extends javax.swing.JFrame {
     public Stop() {
         initComponents();
         showTime();
+        //getProcess();
         hour = cal.get(Calendar.HOUR);
         minute = cal.get(Calendar.MINUTE);
         second = cal.get(Calendar.SECOND);       
@@ -54,7 +57,7 @@ public class Stop extends javax.swing.JFrame {
         if(ampm == 1 ){
             hour += 12;
         }
-        
+        hitungDurasi();
     }
     
     public void checkToken(){
@@ -65,6 +68,11 @@ public class Stop extends javax.swing.JFrame {
     public void setToken(String token){
         this.token = token;
         checkToken();
+    }
+      
+    public int convertdetik(){
+        waktu=detik+60*menit+3600*jam;
+        return waktu;
     }
     
     public void showTime(){
@@ -88,7 +96,41 @@ public class Stop extends javax.swing.JFrame {
                         hour = 0;
                     }
                     
-                    timeLabel.setText(time);
+                    //durasiLabel.setText(time);
+                    try{
+                        Thread.sleep(1000);
+                    }
+                    catch(InterruptedException ex){
+                        Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null,ex);
+                    }
+               }
+           }
+       };
+       t.start();
+    }
+      
+    public void hitungDurasi(){
+        Thread t = new Thread(){
+           public void run(){
+               for(;;){
+                    String time = jam + ":" + menit + ":" + detik +"";
+                    detik++;
+
+                    if(detik == 60){
+                        menit++;
+                        detik = 0;
+                    }
+                    
+                    if(menit == 60){
+                        jam++;
+                        menit = 0;
+                    }
+                    
+                    if(jam == 24){
+                        jam = 0;
+                    }
+                    
+                    durasiLabel.setText(time);
                     try{
                         Thread.sleep(1000);
                     }
@@ -104,6 +146,10 @@ public class Stop extends javax.swing.JFrame {
     public void getProcess(){
         Thread t = new Thread(){
             public void run(){
+                while(!exit){
+                //for(;;){
+                    Calendar timeBeforeProcess = Calendar.getInstance();
+                    System.out.println("before process " + timeBeforeProcess);
                     List<ProcessInfo> processesList = JProcesses.getProcessList();
                     int length = processesList.size();
                     List<String> app = new ArrayList<String>();
@@ -131,6 +177,15 @@ public class Stop extends javax.swing.JFrame {
                           //System.out.println(i+" " +name[i]);
                       }
                     
+                    Calendar timeAfterProcess = Calendar.getInstance();
+                    
+                    System.out.println("before process " + timeAfterProcess);
+                    
+                    long duration = 120000 -( timeAfterProcess.getTimeInMillis() - timeBeforeProcess.getTimeInMillis());
+                    
+                    
+                    System.out.println("duration : " + duration);
+                    System.out.println("finish");
 //                      for(i=0;i<processesList.size();i++){
 //                          name[i]= processesList.get(i).getName();
 //                          //System.out.println(i+" " +name[i]);
@@ -153,12 +208,12 @@ public class Stop extends javax.swing.JFrame {
 //                        sendData(app);
                         //System.out.println(json);
                         try{
-                            Thread.sleep(120000);
+                            Thread.sleep(duration);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(Stop.class.getName()).log(Level.SEVERE, null, ex);
                         }
                 
-                
+                }
             }
         };
         t.start();
@@ -166,19 +221,12 @@ public class Stop extends javax.swing.JFrame {
     }
     
     public void sendData(String[] nama,int length){
-        System.out.println(token);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
             //default timeout for not annotated requests
             .readTimeout(300000, TimeUnit.MILLISECONDS)
             .connectTimeout(300000, TimeUnit.MILLISECONDS)
             .writeTimeout(300000, TimeUnit.MILLISECONDS)
             .build();
-        
-//        RequestBody formBody = new FormBody.Builder()
-//                .add("data[0]", "atom")
-//                .add("data[1]", "firefox")
-//                .add("data[1]", "steam")
-//                .build();
 
         for (int j = 0; j < nama.length; j++) {
             System.out.println(j + " " + nama[j]);
@@ -194,9 +242,7 @@ public class Stop extends javax.swing.JFrame {
         
         //System.out.println(nama);
         Request request = new Request.Builder()
-//                           .url("http://10.252.129.94:8000/api/application-tracking-history/send")
-.url("https://better123.herokuapp.com/api/application-tracking-history/data")
-//                .url("https://better123.herokuapp.com/api/insert")
+                .url("https://better123.herokuapp.com/api/application-tracking-history/data")
                 .addHeader("Content-Type","application/x-www-form-urlencoded")
                 .addHeader("Accept","application/json")
                 .addHeader("Authorization", token)
@@ -231,11 +277,12 @@ public class Stop extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel2 = new javax.swing.JPanel();
-        timeLabel = new javax.swing.JLabel();
         stopLabel = new javax.swing.JLabel();
         closeLabel = new javax.swing.JLabel();
         minimizeLabel = new javax.swing.JLabel();
         exitLabel = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        durasiLabel = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -254,11 +301,6 @@ public class Stop extends javax.swing.JFrame {
             }
         });
         jPanel2.setLayout(null);
-
-        timeLabel.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
-        timeLabel.setText("jLabel2");
-        jPanel2.add(timeLabel);
-        timeLabel.setBounds(190, 280, 200, 60);
 
         stopLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/stop.png"))); // NOI18N
         stopLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -312,6 +354,16 @@ public class Stop extends javax.swing.JFrame {
         jPanel2.add(exitLabel);
         exitLabel.setBounds(990, 20, 20, 20);
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel3.setText("WORKING TIME");
+        jPanel2.add(jLabel3);
+        jLabel3.setBounds(150, 250, 280, 40);
+
+        durasiLabel.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
+        durasiLabel.setText("00:00:00");
+        jPanel2.add(durasiLabel);
+        durasiLabel.setBounds(190, 320, 200, 60);
+
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/custom – 2.png"))); // NOI18N
         jPanel2.add(jLabel2);
         jLabel2.setBounds(0, 0, 1030, 590);
@@ -333,8 +385,12 @@ public class Stop extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void stopLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopLabelMouseClicked
+        Start start = new Start();
+        start.setLocation(x-xx,y-yy);
+        start.setToken(token);
+        start.setVisible(true);
         status = true;
-        new Start().setVisible(true);
+        exit = true;
         this.dispose();
     }//GEN-LAST:event_stopLabelMouseClicked
 
@@ -376,8 +432,8 @@ public class Stop extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel2MousePressed
 
     private void jPanel2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseDragged
-        int x = evt.getXOnScreen();
-        int y = evt.getYOnScreen();
+        x = evt.getXOnScreen();
+        y = evt.getYOnScreen();
         this.setLocation(x-xx, y-yy);
     }//GEN-LAST:event_jPanel2MouseDragged
 
@@ -421,11 +477,12 @@ public class Stop extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel closeLabel;
+    private javax.swing.JLabel durasiLabel;
     private javax.swing.JLabel exitLabel;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel minimizeLabel;
     private javax.swing.JLabel stopLabel;
-    private javax.swing.JLabel timeLabel;
     // End of variables declaration//GEN-END:variables
 }

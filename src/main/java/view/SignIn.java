@@ -28,12 +28,13 @@ import org.json.simple.JSONObject;
  * @author Astin
  */
 public class SignIn extends javax.swing.JFrame {
-    static int xx , yy;
+    static int xx , yy , x , y;
     private final OkHttpClient httpClient = new OkHttpClient();
     private String token = "";
     
     public SignIn() {
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -214,9 +215,10 @@ public class SignIn extends javax.swing.JFrame {
                 i++; 
             }
             System.out.println(token);
-            
+              
                 System.out.println("200");
                 Start start = new Start();
+                start.setLocation(x-xx,y-yy);
                 start.setToken(token);
                 start.setVisible(true);
                 this.dispose();
@@ -257,8 +259,8 @@ public class SignIn extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel2MousePressed
 
     private void jPanel2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseDragged
-        int x = evt.getXOnScreen();
-        int y = evt.getYOnScreen();
+         x = evt.getXOnScreen();
+         y = evt.getYOnScreen();
         this.setLocation(x-xx, y-yy);
     }//GEN-LAST:event_jPanel2MouseDragged
 

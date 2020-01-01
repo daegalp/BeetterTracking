@@ -18,7 +18,7 @@ import javax.swing.ImageIcon;
  */
 public class Start extends javax.swing.JFrame {
     int hour, minute, second, ampm;
-    int xx,yy;
+    int xx, yy, x, y;
     String token="";
     
     Calendar cal = Calendar.getInstance();
@@ -63,7 +63,7 @@ public class Start extends javax.swing.JFrame {
                         hour = 0;
                     }
                     
-                    timeLabel.setText(time);
+                    //timeLabel.setText(time);
                     try{
                         Thread.sleep(1000);
                     }
@@ -91,6 +91,7 @@ public class Start extends javax.swing.JFrame {
         closeLabel = new javax.swing.JLabel();
         exitLabel = new javax.swing.JLabel();
         minimizeLabel = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -111,9 +112,9 @@ public class Start extends javax.swing.JFrame {
         jPanel1.setLayout(null);
 
         timeLabel.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
-        timeLabel.setText("jLabel2");
+        timeLabel.setText("00:00:00");
         jPanel1.add(timeLabel);
-        timeLabel.setBounds(190, 280, 200, 60);
+        timeLabel.setBounds(190, 320, 200, 60);
 
         startLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/start.png"))); // NOI18N
         startLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -167,6 +168,11 @@ public class Start extends javax.swing.JFrame {
         jPanel1.add(minimizeLabel);
         minimizeLabel.setBounds(940, 10, 40, 30);
 
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel2.setText("WORKING TIME");
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(150, 250, 280, 40);
+
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/custom – 2.png"))); // NOI18N
         jPanel1.add(jLabel1);
         jLabel1.setBounds(0, 0, 1030, 590);
@@ -191,8 +197,10 @@ public class Start extends javax.swing.JFrame {
 
     private void startLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startLabelMouseClicked
         Stop stop = new Stop();
+        stop.setLocation(x - xx,y - yy);
         stop.setVisible(true);
         stop.setToken(token);
+        stop.exit = false;
         this.dispose();
     }//GEN-LAST:event_startLabelMouseClicked
 
@@ -234,8 +242,8 @@ public class Start extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel1MousePressed
 
     private void jPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseDragged
-        int x = evt.getXOnScreen();
-        int y = evt.getYOnScreen();
+        x = evt.getXOnScreen();
+        y = evt.getYOnScreen();
         this.setLocation(x-xx, y-yy);
     }//GEN-LAST:event_jPanel1MouseDragged
 
@@ -279,6 +287,7 @@ public class Start extends javax.swing.JFrame {
     private javax.swing.JLabel closeLabel;
     private javax.swing.JLabel exitLabel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel minimizeLabel;
     private javax.swing.JLabel startLabel;
