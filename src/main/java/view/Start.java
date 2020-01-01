@@ -24,56 +24,11 @@ public class Start extends javax.swing.JFrame {
     Calendar cal = Calendar.getInstance();
     public Start() {
         initComponents();
-        showTime();
-        hour = cal.get(Calendar.HOUR);
-        minute = cal.get(Calendar.MINUTE);
-        second = cal.get(Calendar.SECOND);       
-        ampm = cal.get(Calendar.AM_PM);
-        
-        if(ampm == 1 ){
-            hour += 12;
-        }
+        this.setLocationRelativeTo(null);
     }
     
     public void setToken(String token){
         this.token = token;
-        System.out.println("--------START---------");
-        System.out.println(token);
-        System.out.println("-------START----------");
-    }
-    
-    public void showTime(){
-       Thread t = new Thread(){
-           public void run(){
-               for(;;){
-                    String time = hour + ":" + minute + ":" + second +"";
-                    second++;
-
-                    if(second == 60){
-                        minute++;
-                        second = 0;
-                    }
-                    
-                    if(minute == 60){
-                        hour++;
-                        minute = 0;
-                    }
-                    
-                    if(hour == 24){
-                        hour = 0;
-                    }
-                    
-                    //timeLabel.setText(time);
-                    try{
-                        Thread.sleep(1000);
-                    }
-                    catch(InterruptedException ex){
-                        Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null,ex);
-                    }
-               }
-           }
-       };
-       t.start();
     }
     
     /**
@@ -197,7 +152,6 @@ public class Start extends javax.swing.JFrame {
 
     private void startLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startLabelMouseClicked
         Stop stop = new Stop();
-        stop.setLocation(x - xx,y - yy);
         stop.setVisible(true);
         stop.setToken(token);
         stop.exit = false;

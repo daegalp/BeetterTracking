@@ -34,7 +34,6 @@ import org.json.simple.JSONObject;
  */
 public class Stop extends javax.swing.JFrame {
     private String token = "";
-    int hour, minute, second, ampm;
     int jam,menit,detik;
     int waktu;
     int xx,yy,x,y;
@@ -47,16 +46,7 @@ public class Stop extends javax.swing.JFrame {
     
     public Stop() {
         initComponents();
-        showTime();
-        //getProcess();
-        hour = cal.get(Calendar.HOUR);
-        minute = cal.get(Calendar.MINUTE);
-        second = cal.get(Calendar.SECOND);       
-        ampm = cal.get(Calendar.AM_PM);
-        
-        if(ampm == 1 ){
-            hour += 12;
-        }
+        this.setLocationRelativeTo(null);
         hitungDurasi();
     }
     
@@ -74,41 +64,7 @@ public class Stop extends javax.swing.JFrame {
         waktu=detik+60*menit+3600*jam;
         return waktu;
     }
-    
-    public void showTime(){
-       Thread t = new Thread(){
-           public void run(){
-               for(;;){
-                    String time = hour + ":" + minute + ":" + second +"";
-                    second++;
-
-                    if(second == 60){
-                        minute++;
-                        second = 0;
-                    }
-                    
-                    if(minute == 60){
-                        hour++;
-                        minute = 0;
-                    }
-                    
-                    if(hour == 24){
-                        hour = 0;
-                    }
-                    
-                    //durasiLabel.setText(time);
-                    try{
-                        Thread.sleep(1000);
-                    }
-                    catch(InterruptedException ex){
-                        Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null,ex);
-                    }
-               }
-           }
-       };
-       t.start();
-    }
-      
+          
     public void hitungDurasi(){
         Thread t = new Thread(){
            public void run(){
@@ -149,64 +105,27 @@ public class Stop extends javax.swing.JFrame {
                 while(!exit){
                 //for(;;){
                     Calendar timeBeforeProcess = Calendar.getInstance();
-                    System.out.println("before process " + timeBeforeProcess);
                     List<ProcessInfo> processesList = JProcesses.getProcessList();
-                    int length = processesList.size();
                     List<String> app = new ArrayList<String>();
                  
-                    
-//                    Set<ProcessInfo> setProcess = new HashSet<>(processesList); 
-//                    List<ProcessInfo> processListNoDuplicate  = new ArrayList<>(setProcess);
-//String name = "{";
-//                if(status == false){
                     for(i=0;i<processesList.size();i++){
                         app.add(processesList.get(i).getName());
-                          //name[i]= processListNoDuplicate.get(i).getName();
-                          //System.out.println(i+" " +name[i]);
                     }
-                    System.out.println("--->" + processesList.size());
+                    
                     Set<String> setProcess = new HashSet<>(app); 
                     List<String> processListNoDuplicate  = new ArrayList<>(setProcess);
-                    
-                    System.out.println("--->" + processListNoDuplicate.size());
                     
                     String[] name = new String[processListNoDuplicate.size()];
                     
                     for(i=0;i<processListNoDuplicate.size();i++){
                           name[i]= processListNoDuplicate.get(i);
-                          //System.out.println(i+" " +name[i]);
                       }
                     
                     Calendar timeAfterProcess = Calendar.getInstance();
-                    
-                    System.out.println("before process " + timeAfterProcess);
-                    
                     long duration = 120000 -( timeAfterProcess.getTimeInMillis() - timeBeforeProcess.getTimeInMillis());
                     
-                    
-                    System.out.println("duration : " + duration);
-                    System.out.println("finish");
-//                      for(i=0;i<processesList.size();i++){
-//                          name[i]= processesList.get(i).getName();
-//                          //System.out.println(i+" " +name[i]);
-//                      }
-                      
-                      //name += "}";
                         sendData(name,name.length);
-//                        System.out.println("\n");
-//                        Gson gson = new GsonBuilder().create();
-//                        String jsonArray=gson.toJson(name);
-//                        System.out.println(" ---- >" + name);
-//                        sendData(jsonArray);
-//                        for (final ProcessInfo processInfo : processesList) {
-//                            app.add(processInfo.getName());
-//                            //System.out.println("Process Name: " + processInfo.getName());
-//                        }
-//                        System.out.println(app);
-//                        System.out.println("----------------json----------");
-//                        //String json = new Gson().toJson(app);
-//                        sendData(app);
-                        //System.out.println(json);
+                        
                         try{
                             Thread.sleep(duration);
                         } catch (InterruptedException ex) {
@@ -227,10 +146,6 @@ public class Stop extends javax.swing.JFrame {
             .connectTimeout(300000, TimeUnit.MILLISECONDS)
             .writeTimeout(300000, TimeUnit.MILLISECONDS)
             .build();
-
-        for (int j = 0; j < nama.length; j++) {
-            System.out.println(j + " " + nama[j]);
-        }
         
         FormBody.Builder formBuilder = new FormBody.Builder();
         
@@ -240,7 +155,6 @@ public class Stop extends javax.swing.JFrame {
         }
         RequestBody formBody = formBuilder.build();
         
-        //System.out.println(nama);
         Request request = new Request.Builder()
                 .url("https://better123.herokuapp.com/api/application-tracking-history/data")
                 .addHeader("Content-Type","application/x-www-form-urlencoded")
@@ -386,7 +300,6 @@ public class Stop extends javax.swing.JFrame {
 
     private void stopLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopLabelMouseClicked
         Start start = new Start();
-        start.setLocation(x-xx,y-yy);
         start.setToken(token);
         start.setVisible(true);
         status = true;

@@ -185,6 +185,10 @@ public class SignIn extends javax.swing.JFrame {
     private void signInLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signInLabelMouseClicked
         String email = emailField.getText();
         String password = passwordField.getText();
+        signIn(email, password);
+    }//GEN-LAST:event_signInLabelMouseClicked
+
+    public void signIn(String email, String password){
         RequestBody formBody = new FormBody.Builder()
                 .add("email", email)
                 .add("password", password)
@@ -218,7 +222,6 @@ public class SignIn extends javax.swing.JFrame {
               
                 System.out.println("200");
                 Start start = new Start();
-                start.setLocation(x-xx,y-yy);
                 start.setToken(token);
                 start.setVisible(true);
                 this.dispose();
@@ -231,9 +234,7 @@ public class SignIn extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(SignIn.class.getName()).log(Level.SEVERE, null, ex);
         }
-              
-    }//GEN-LAST:event_signInLabelMouseClicked
-
+    }
     private void signInLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signInLabelMouseEntered
         // TODO add your handling code here:
         ImageIcon i = new ImageIcon(getClass().getClassLoader().getResource("images/signInClicked.png"));
