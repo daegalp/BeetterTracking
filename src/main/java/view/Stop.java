@@ -34,12 +34,11 @@ import org.json.simple.JSONObject;
  */
 public class Stop extends javax.swing.JFrame {
     private String token = "";
-    int jam,menit,detik;
-    int waktu;
+    int hour,minute,second;
+    int timeInSecond;
     int xx,yy,x,y;
     boolean exit = false;
 
-    int i=0;
     boolean status = false;
     
     Calendar cal = Calendar.getInstance();
@@ -47,7 +46,7 @@ public class Stop extends javax.swing.JFrame {
     public Stop() {
         initComponents();
         this.setLocationRelativeTo(null);
-        hitungDurasi();
+        countWorkingTime();
     }
     
     public void checkToken(){
@@ -60,30 +59,30 @@ public class Stop extends javax.swing.JFrame {
         checkToken();
     }
       
-    public int convertdetik(){
-        waktu=detik+60*menit+3600*jam;
-        return waktu;
+    public int convertsecond(){
+        timeInSecond=second+60*minute+3600*hour;
+        return timeInSecond;
     }
           
-    public void hitungDurasi(){
+    public void countWorkingTime(){
         Thread t = new Thread(){
            public void run(){
                for(;;){
-                    String time = jam + ":" + menit + ":" + detik +"";
-                    detik++;
+                    String time = hour + ":" + minute + ":" + second +"";
+                    second++;
 
-                    if(detik == 60){
-                        menit++;
-                        detik = 0;
+                    if(second == 60){
+                        minute++;
+                        second = 0;
                     }
                     
-                    if(menit == 60){
-                        jam++;
-                        menit = 0;
+                    if(minute == 60){
+                        hour++;
+                        minute = 0;
                     }
                     
-                    if(jam == 24){
-                        jam = 0;
+                    if(hour == 24){
+                        hour = 0;
                     }
                     
                     durasiLabel.setText(time);
@@ -91,7 +90,8 @@ public class Stop extends javax.swing.JFrame {
                         Thread.sleep(1000);
                     }
                     catch(InterruptedException ex){
-                        Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null,ex);
+                        Logger.getLogger(Start.class.getName())
+                                         .log(Level.SEVERE, null,ex);
                     }
                }
            }
@@ -103,33 +103,36 @@ public class Stop extends javax.swing.JFrame {
         Thread t = new Thread(){
             public void run(){
                 while(!exit){
-                //for(;;){
                     Calendar timeBeforeProcess = Calendar.getInstance();
-                    List<ProcessInfo> processesList = JProcesses.getProcessList();
+                    List<ProcessInfo> processesList = JProcesses
+                                                      .getProcessList();
                     List<String> app = new ArrayList<String>();
                  
-                    for(i=0;i<processesList.size();i++){
+                    for(int i=0;i<processesList.size();i++){
                         app.add(processesList.get(i).getName());
                     }
                     
                     Set<String> setProcess = new HashSet<>(app); 
-                    List<String> processListNoDuplicate  = new ArrayList<>(setProcess);
+                    List<String> processListNoDuplicate  = new ArrayList<>
+                                                            (setProcess);
                     
                     String[] name = new String[processListNoDuplicate.size()];
                     
-                    for(i=0;i<processListNoDuplicate.size();i++){
+                    for(int i=0;i<processListNoDuplicate.size();i++){
                           name[i]= processListNoDuplicate.get(i);
                       }
                     
                     Calendar timeAfterProcess = Calendar.getInstance();
-                    long duration = 120000 -( timeAfterProcess.getTimeInMillis() - timeBeforeProcess.getTimeInMillis());
+                    long duration = 120000 -( timeAfterProcess.getTimeInMillis() 
+                                    - timeBeforeProcess.getTimeInMillis());
                     
                         sendData(name,name.length);
                         
                         try{
                             Thread.sleep(duration);
                         } catch (InterruptedException ex) {
-                            Logger.getLogger(Stop.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(Stop.class.getName())
+                                            .log(Level.SEVERE, null, ex);
                         }
                 
                 }
@@ -139,7 +142,7 @@ public class Stop extends javax.swing.JFrame {
         
     }
     
-    public void sendData(String[] nama,int length){
+    public void sendData(String[] name,int length){
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
             //default timeout for not annotated requests
             .readTimeout(300000, TimeUnit.MILLISECONDS)
@@ -150,18 +153,18 @@ public class Stop extends javax.swing.JFrame {
         FormBody.Builder formBuilder = new FormBody.Builder();
         
         for(int i=0; i< length;i++){
-            formBuilder.add("data[" + i + "]" , nama[i]);
+            formBuilder.add("data[" + i + "]" , name[i]);
         
         }
         RequestBody formBody = formBuilder.build();
         
         Request request = new Request.Builder()
-                .url("https://better123.herokuapp.com/api/application-tracking-history/data")
-                .addHeader("Content-Type","application/x-www-form-urlencoded")
-                .addHeader("Accept","application/json")
-                .addHeader("Authorization", token)
-                .post(formBody)
-                .build();
+            .url("https://better123.herokuapp.com/api/application-tracking-history/data")
+            .addHeader("Content-Type","application/x-www-form-urlencoded")
+            .addHeader("Accept","application/json")
+            .addHeader("Authorization", token)
+            .post(formBody)
+            .build();
         
         
         

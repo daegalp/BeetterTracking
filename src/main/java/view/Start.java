@@ -17,11 +17,9 @@ import javax.swing.ImageIcon;
  * @author Astin
  */
 public class Start extends javax.swing.JFrame {
-    int hour, minute, second, ampm;
     int xx, yy, x, y;
     String token="";
     
-    Calendar cal = Calendar.getInstance();
     public Start() {
         initComponents();
         this.setLocationRelativeTo(null);

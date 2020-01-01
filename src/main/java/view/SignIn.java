@@ -29,7 +29,6 @@ import org.json.simple.JSONObject;
  */
 public class SignIn extends javax.swing.JFrame {
     static int xx , yy , x , y;
-    private final OkHttpClient httpClient = new OkHttpClient();
     private String token = "";
     
     public SignIn() {
@@ -136,7 +135,7 @@ public class SignIn extends javax.swing.JFrame {
         passwordField.setBorder(null);
         passwordField.setOpaque(false);
         jPanel2.add(passwordField);
-        passwordField.setBounds(80, 320, 360, 50);
+        passwordField.setBounds(220, 340, 360, 50);
 
         notificationLabel.setBackground(new java.awt.Color(255, 0, 51));
         notificationLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -185,10 +184,11 @@ public class SignIn extends javax.swing.JFrame {
     private void signInLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signInLabelMouseClicked
         String email = emailField.getText();
         String password = passwordField.getText();
-        signIn(email, password);
+        signInProcess(email, password);
     }//GEN-LAST:event_signInLabelMouseClicked
 
-    public void signIn(String email, String password){
+    public void signInProcess(String email, String password){
+        OkHttpClient httpClient = new OkHttpClient();
         RequestBody formBody = new FormBody.Builder()
                 .add("email", email)
                 .add("password", password)
